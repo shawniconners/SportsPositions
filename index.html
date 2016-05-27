@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Montana Cities</title>
+		<script>
+			
+			function capitaliseFirstLetter(string)
+			{
+				return string.charAt(0).toUpperCase() + string.slice(1);
+			}
+		
+			function preventBehavior(e)
+			{
+				e.preventDefault();
+			};
+			
+			function funShowItem(inc_element_id){
+				document.getElementById(inc_element_id).style.visibility = "visible";
+				document.getElementById(inc_element_id).style.display = "block";
+			}
+			
+			function funHideItem(inc_element_id){
+				document.getElementById(inc_element_id).style.visibility = "hidden";
+				document.getElementById(inc_element_id).style.display = "none";
+			}
+			
+			function randint( l, u )
+			// Returns an integer uniformly distributed over l..u.
+			{
+				return l + Math.floor( Math.random() * ( u + 1 - l ));
+			}
+			
+			function generate( )
+			{
+				var minval = 0;
+				var maxval = 8;
+				
+				
+				var a = new Array( maxval - minval + 1 );
+				
+				
+				for ( var i = 0, j = minval; j <= maxval; i++, j++ )
+				{
+					a[i] = j;
+				}
+				
+				
+				for ( var i = a.length - 1; i > 0; i-- )
+				{
+					var j = randint( 0, i );
+					
+					// Swap the elements at positions i and j.
+					var temp = a[i];
+					a[i] = a[j];
+					a[j] = temp;
+				}
+				
+				for ( var i = 0; i < a.length; i++ )
+				{
+					arrCityRandom[i] = arrCityNames[a[i]];
+				}
+				
+			}
+			
+			var arrCityRandom = new Array(9);
+			var arrCityAnswers = new Array(9);
+			var arrCityNames = ["Pitcher",
+								"Catcher",
+								"First Baseman",
+								"Second Baseman",
+								"Third Baseman",
+								"Shortstop",
+								"Left Fielder",
+								"Center Fielder",
+								"Right Fielder"
+							 ];
+			var arrCityClean = ["Pitcher",
+								"Catcher",
+								"FirstBaseman",
+								"SecondBaseman",
+								"ThirdBaseman",
+								"Shortstop",
+								"LeftFielder",
+								"CenterFielder",
+								"RightFielder"
+								];
+			
+			
+			 
+			var arrCityLefts=["366",
+							  "366",
+							  "496",
+							  "432",
+							  "235",
+							  "290",
+							  "200",
+							  "365",
+							  "533"
+							  ];
+			
+			var arrCityTops=["562",
+							  "721",
+							  "542",
+							  "472",
+							  "541",
+							  "471",
+							  "356",
+							  "284",
+							  "354"
+							  ];
+			
+			function funStart(){
+				for (var i=0;i<arrCityNames.length;i++)
+				{
+					divCity = document.createElement("div");
+					divCity.setAttribute("id","div_city_" + arrCityClean[i]);
+					divCity.setAttribute("class","div_city");
+					divCity.style.left = arrCityLefts[i] + "px";
+					divCity.style.top = arrCityTops[i] + "px";
+					document.getElementById("div_container").appendChild(divCity);
+					document.getElementById("div_city_" + arrCityClean[i]).addEventListener('touchstart', funCityTap, false);
+				}
+			}
+			
+			function funCityCleanToDirty(inc_clean){
+				strCityDirty = "";
+				for (var i=0;i<arrCityClean.length;i++)
+				{
+					if(arrCityClean[i] == inc_clean){
+						strCityDirty = arrCityNames[i];
+					}
+				}
+				return strCityDirty;
+			}
+			
+			function funCityDirtyToClean(inc_dirty){
+				strCityClean = "";
+				for (var i=0;i<arrCityNames.length;i++)
+				{
+					if(arrCityNames[i] == inc_dirty){
+						strCityClean = arrCityClean[i];
+					}
+				}
+				return strCityClean;
+			}
+			
+			function funCityTap(e){
+				if((intActiveGame == 1) && (document.getElementById(e.target.id).className != "div_city_blue")){
+					strCityTapped = e.target.id;
+					document.getElementById(e.target.id).className = "div_city_blue";
+					strCityTapped = strCityTapped.replace("div_city_","");
+					strCityTapped = funCityCleanToDirty(strCityTapped);
+					arrCityAnswers[intCurrentQuestion] = strCityTapped;
+					intCurrentQuestion = intCurrentQuestion + 1;
+					funShowQuestion();
+				}
+				if(intLearnMode == 1){
+					for (var i=0;i<arrCityClean.length;i++)
+					{
+						document.getElementById("div_city_" + arrCityClean[i]).className = "div_city";
+						
+					}
+					strCityTapped = e.target.id;
+					strCityTapped = strCityTapped.replace("div_city_","");
+					strCityTapped = funCityCleanToDirty(strCityTapped);
+					document.getElementById("div_prompt").innerHTML = strCityTapped;
+					document.getElementById(e.target.id).className = "div_city_green";
+					tempSoundFile = strCityTapped.toLowerCase() + ".aiff";
+					tempSoundFile = tempSoundFile.replace(" ","");
+					mp3Audio = new Media(tempSoundFile, funSuccess, funError);
+                    mp3Audio.play();
+				}
+			}
+			
+			function funSuccess(){
+				//
+			}
+			
+			function funError(){
+				//
+			}
+			
+			function funHome(){
+				intLearnMode = 0;
+				intActiveGame = 0;
+				intCurrentQuestion = 0;
+				intAnswersCorrect = 0;
+				funHideItem("div_prompt");
+				funHideItem("div_quit_button");
+				funHideItem("div_home_button");
+				funHideItem("div_results");
+				funShowItem("div_start_button");
+				funShowItem("div_learn_button");
+				for (var i=0;i<arrCityClean.length;i++)
+				{
+					document.getElementById("div_city_" + arrCityClean[i]).className = "div_city";
+					
+				}
+			}
+			
+			
+			function funStartGame(){
+				funHideItem("div_learn_button");
+				funHideItem("div_start_button");
+				funShowItem("div_prompt");
+				funShowItem("div_quit_button");
+				intActiveGame = 1;
+				intCurrentQuestion = 0;
+				generate();
+				funShowQuestion();
+			}
+			
+			function funShowQuestion(){
+				if(intCurrentQuestion < 9){
+					document.getElementById("div_prompt").innerHTML = "Tap " + arrCityRandom[intCurrentQuestion];
+					
+					strNextSound = arrCityRandom[intCurrentQuestion].toLowerCase() + ".aiff";
+					strNextSound = strNextSound.replace(" ","");
+					
+					tempTapFile = "tap.aiff";
+					mp3Tap = new Media(tempTapFile, function(){
+									   mp3Audio = new Media(strNextSound, funSuccess, funError);
+									   mp3Audio.play();
+									   }, funError);
+                    mp3Tap.play();
+                    
+				}else{
+					funGameOver();
+				}
+			}
+			
+			var strNextSound = "";
+			
+			function funGameOver(){
+				intActiveGame = 0;
+				intCurrentQuestion = 0;
+				intAnswersCorrect = 0;
+				for (var i=0;i<arrCityNames.length;i++)
+				{
+					tempCity = funCityDirtyToClean(arrCityRandom[i]);
+					if(arrCityRandom[i] == arrCityAnswers[i]){
+						intAnswersCorrect++;
+						document.getElementById("div_city_" + tempCity).className = "div_city_green";
+					}else{
+						document.getElementById("div_city_" + tempCity).className = "div_city_red";
+					}
+					
+				}
+				if(intAnswersCorrect == 9){
+					intScore = 100;
+				}else{
+					intScore = intAnswersCorrect * 11;
+				}
+				funHideItem("div_prompt");
+				funHideItem("div_quit_button");
+				document.getElementById("div_results").innerHTML = "Your Score: " + intScore.toString() + "%";
+				funShowItem("div_results");
+				funShowItem("div_home_button");
+			}
+			
+			function funLearn(){
+				intLearnMode = 1;
+				funHideItem("div_learn_button");
+				funHideItem("div_start_button");
+				funShowItem("div_prompt");
+				document.getElementById("div_prompt").innerHTML = "Tap a Position"
+				funShowItem("div_home_button");
+			}
+			
+			
+			function funBaseballLaunch(){
+				document.location.href = "index.html";
+			}
+			
+			function funBasketballLaunch(){
+				document.location.href = "basketball.html";
+			}
+			
+			function funHockeyLaunch(){
+				document.location.href = "hockey.html";
+			}
+			
+			var intLearnMode = 0;
+			var intActiveGame = 0;
+			var intCurrentQuestion = 0;
+			var intAnswersCorrect = 0;
+			
+		</script>
+		<style>
+			body, div, img{
+				margin: 0px;
+				padding: 0px;
+				
+			}
+			#div_container{
+				background: url('img/background_baseball.png');
+				background-size: 100%;
+				width: 768px;
+				height: 1004px;
+			}
+			#div_baseball_button{
+				width: 256px;
+				height: 216px;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+			}
+			#div_basketball_button{
+				width: 256px;
+				height: 216px;
+				position: absolute;
+				top: 0px;
+				left: 256px;
+			}
+			#div_hockey_button{
+				width: 256px;
+				height: 216px;
+				position: absolute;
+				top: 0px;
+				left: 512px;
+			}
+			#div_start_button{
+				background: url('img/start.png');
+				background-size: 100%;
+				width: 210px;
+				height: 118px;
+				position: absolute;
+				top: 890px;
+				left: 475px;
+			}
+			#div_learn_button{
+				background: url('img/learn.png');
+				background-size: 100%;
+				width: 210px;
+				height: 118px;
+				position: absolute;
+				top: 890px;
+				left: 80px;
+			}
+			#div_home_button{
+				background: url('img/home.png');
+				background-size: 100%;
+				width: 210px;
+				height: 118px;
+				position: absolute;
+				top: 890px;
+				left: 540px;
+				visibility: hidden;
+				display: none;
+			}
+			#div_quit_button{
+				background: url('img/quit.png');
+				background-size: 100%;
+				width: 210px;
+				height: 118px;
+				position: absolute;
+				top: 890px;
+				left: 540px;
+				visibility: hidden;
+				display: none;
+			}
+			#div_prompt{
+				width: 495px;
+				height: 60px;
+				position: absolute;
+				top: 890px;
+				left: 5px;
+				padding: 20px;
+				visibility: hidden;
+				display: none;
+				text-align: center;
+				font-size: 36px;
+				font-family: Verdana;
+				color: #FFF;
+			}
+			#div_results{
+				width: 495px;
+				height: 60px;
+				position: absolute;
+				top: 890px;
+				left: 5px;
+				padding: 20px;
+				visibility: hidden;
+				display: none;
+				text-align: center;
+				font-size: 48px;
+				font-family: Verdana;
+				color: #FFF;
+			}
+			.div_city{
+				background: url('img/grey_marker.png');
+				background-size: 100%;
+				width: 37px;
+				height: 70px;
+				position: absolute;
+			}
+			.div_city_blue{
+				background: url('img/blue_marker.png');
+				background-size: 100%;
+				width: 37px;
+				height: 70px;
+				position: absolute;
+			}
+			.div_city_green{
+				background: url('img/green_marker.png');
+				background-size: 100%;
+				width: 37px;
+				height: 70px;
+				position: absolute;
+			}
+			.div_city_red{
+				background: url('img/red_marker.png');
+				background-size: 100%;
+				width: 37px;
+				height: 70px;
+				position: absolute;
+			}
+			.div_city_tapped{
+				background: url('img/grey_marker.png');
+				background-size: 100%;
+				width: 37px;
+				height: 70px;
+				position: absolute;
+			}
+			#div_preload{
+				position: absolute;
+				left: -10000px;
+				top: -10000px;
+			}
+			
+		</style>
+
+    </head>
+    <body>
+		<div id="div_container">
+			<div id="div_baseball_button"></div>
+			<div id="div_basketball_button"></div>
+			<div id="div_hockey_button"></div>
+			<div id="div_learn_button"></div>
+			<div id="div_start_button"></div>
+			<div id="div_home_button"></div>
+			<div id="div_quit_button"></div>
+			<div id="div_prompt"></div>
+			<div id="div_results"></div>
+		</div>
+		<div id="div_preload">
+			<img src="img/blue_marker.png">
+			<img src="img/green_marker.png">
+			<img src="img/red_marker.png">
+			<img src="img/grey_marker.png">
+		</div>
+        <script type="text/javascript" src="cordova-2.2.0rc1.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html>
